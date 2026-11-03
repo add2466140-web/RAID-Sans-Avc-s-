@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raid RPG Arenası</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; margin: 0; padding: 20px; }
+        .arena { border: 2px solid #e0a96d; border-radius: 12px; padding: 15px; background: #222; margin-top: 20px; }
+        .hero-box { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .card { background: #333; padding: 15px; border-radius: 8px; width: 40%; border: 1px solid #555; }
+        .hp-bar { background: #555; height: 15px; border-radius: 5px; margin-top: 8px; overflow: hidden; }
+        .hp-fill { background: #28a745; height: 100%; width: 100%; transition: width 0.3s; }
+        .enemy-hp { background: #dc3545; }
+        button { background: #e0a96d; border: none; padding: 12px 20px; font-weight: bold; border-radius: 6px; margin: 5px; cursor: pointer; font-size: 16px; }
+        #log { background: #000; height: 100px; overflow-y: auto; text-align: left; padding: 10px; font-size: 13px; border-radius: 6px; border: 1px solid #444; }
+    </style>
+</head>
+<body>
+    <h1>⚔️ RAID RPG ARENA ⚔️</h1>
+    <div class="arena">
+        <div class="hero-box">
+            <div class="card">
+                <h3 id="hero-name">Kral Arthur</h3>
+                <p>Güç: <span id="hero-atk">25</span></p>
+                <div class="hp-bar"><div id="hero-hp" class="hp-fill"></div></div>
+            </div>
+            <div class="card">
+                <h3 id="enemy-name">Gölge İblisi</h3>
+                <p>Güç: <span id="enemy-atk">18</span></p>
+                <div class="hp-bar"><div id="enemy-hp" class="hp-fill enemy-hp"></div></div>
+            </div>
+        </div>
+        <div>
+            <button onclick="attack()">Saldır ⚔️</button>
+            <button onclick="heal()">Can Yenile 🛡️</button>
+        </div>
+    </div>
+    <h3>Savaş Günlüğü</h3>
+    <div id="log"></div>
+
+    <script>
+        let hero = { name: "Kral Arthur", hp: 100, maxHp: 100, atk: 25 };
+        let enemy = { name: "Gölge İblisi", hp: 120, maxHp: 120, atk: 18 };
+
+        function logMessage(msg) {
+            let log = document.getElementById('log');
+            log.innerHTML += msg + "<br>";
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateUI() {
+            document.getElementById('hero-hp').style.width = Math.max(0, (hero.hp / hero.maxHp * 100)) + '%';
+            document.getElementById('enemy-hp').style.width = Math.max(0, (enemy.hp / enemy.maxHp * 100)) + '%';
+        }
+
+        function attack() {
+            if(hero.hp <= 0 || enemy.hp <= 0) return;
+            let dmg = Math.floor(hero.atk * (0.8 + Math.random() * 0.4));
+            enemy.hp -= dmg;
+            logMessage(`⚔️ ${hero.name}, düşmana <b>${dmg}</b> hasar verdi!`);
+            
+            if(enemy.hp <= 0) {
+                logMessage("🎉 <b>ZAFER! Düşmanı yendin!</b>");
+                updateUI();
+                return;
+            }
+            setTimeout(enemyTurn, 600);
+            updateUI();
+        }
+
+        function heal() {
+            if(hero.hp <= 0 || enemy.hp <= 0) return;
+            let healAmt = 25;
+            hero.hp = Math.min(hero.maxHp, hero.hp + healAmt);
+            logMessage(`🛡️ ${hero.name} kendisini <b>${healAmt} HP</b> iyileştirdi.`);
+            setTimeout(enemyTurn, 600);
+            updateUI();
+        }
+
+        function enemyTurn() {
+            let eDmg = Math.floor(enemy.atk * (0.8 + Math.random() * 0.4));
+            hero.hp -= eDmg;
+            logMessage(`🔥 ${enemy.name} sana <b>${eDmg}</b> hasar verdi!`);
+            if(hero.hp <= 0) {
+                logMessage("☠️ <b>YENİLGİ! Kahramanın düştü!</b>");
+            }
+            updateUI();
+        }
+    </script>
+</body>
+</html>
